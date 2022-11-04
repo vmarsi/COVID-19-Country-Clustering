@@ -75,5 +75,5 @@ class R0Generator:
         f[i["l1"]:s_mtx:n_states, i["i3"]:s_mtx:n_states] = inf_s * contact_mtx.T * susc_vec
         return f           # f: (144, 144)
 
-    def __idx(self, state: str) -> int:
-        return np.arange(self.n_age * self.n_states) % self.n_states == self.i[state]
+    def __idx(self, state: str) -> np.ndarray:
+        return np.array(np.arange(self.n_age * self.n_states) % self.n_states == self.i[state])
