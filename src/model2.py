@@ -8,8 +8,7 @@ class EpidemicModelBase(ABC):
     def __init__(self, model_data, compartments):
         vals = [model_data.age_data[keys]["age"] for keys in model_data.age_data.keys()]
         array = np.array(vals)
-        array_flattened = array.flatten()
-        self.population = array_flattened
+        self.population = array
         self.compartments = compartments
         self.c_idx = {comp: idx for idx, comp in enumerate(self.compartments)}
         self.n_age = array.shape[1]
@@ -58,6 +57,8 @@ class RostModelHungary(EpidemicModelBase):
                         "ih", "ic", "icr",
                         "r", "d", "c"]
         super().__init__(model_data=model_data, compartments=compartments)
+        self.time_max = 400
+        self.time_vector = np.linspace(0, self.time_max, self.time_max)
 
     def update_initial_values(self, iv):
         iv["l1"][2] = 1  # np.array([0, 0, 0, 4, 3, 3, 1, 2, 1, 2, 2, 2, 5, 5, 0, 0])
