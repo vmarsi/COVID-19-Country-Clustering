@@ -37,5 +37,41 @@ def main2():
     plt.show()
 
 
+def main3():
+    data = DataLoader()
+    model = RostModelHungary(model_data=data)
+    full_contact_mx = np.sum([data.contact_data["Hungary"][i] for i in data.contact_data["Hungary"].keys()], axis=0)
+    data.model_parameters_data.update({"susc": np.ones(16) * 0.2})
+    betas = np.zeros(200)
+    deaths = np.zeros(200)
+    dicti = dict()
+    i = 0
+    for beta in np.arange(0.01, 1.005, 0.005):
+        betas[i] = beta
+        data.model_parameters_data.update({"beta": beta})
+        sol = model.get_solution(t=model.time_vector, parameters=data.model_parameters_data, cm=full_contact_mx)
+        deaths[i] = np.sum(model.get_deaths(solution=sol))
+        i += 1
+        dicti.update({deaths[i]: i})
+    deaths_min = min(abs(deaths - 0.001 * np.sum(model.population)))
+    for k in range(len(deaths)):
+        if deaths[k] == 0.001 * np.sum(model.population) - deaths_min \
+                or deaths[k] == deaths_min + 0.001 * np.sum(model.population):
+            data.model_parameters_data.update({"beta": round(betas[k], 3)})
+    print(data.model_parameters_data["beta"])
+
+
+def main4():
+    data = DataLoader()
+    model = RostModelHungary(model_data=data)
+    full_contact_mx = np.sum([data.contact_data["Hungary"][i] for i in data.contact_data["Hungary"].keys()], axis=0)
+    data.model_parameters_data.update({"beta": 0.125})
+    data.model_parameters_data.update({"susc": np.ones(16) * 0.2})
+    sol = model.get_solution(t=model.time_vector, parameters=data.model_parameters_data, cm=full_contact_mx)
+    deaths = model.get_deaths(solution=sol)
+    print(np.sum(deaths))
+    print(0.001 * np.sum(model.population))
+
+
 if __name__ == "__main__":
-    main2()
+    main3()
