@@ -29,6 +29,15 @@ def main():
 
     print([[1, 2], [3, 4]])
 
+    u = np.zeros((10, 9))
+    i = 1
+    for n in range(len(u)):
+        for m in range(len(u[0])):
+            u[n][m] = i
+            i += 1
+    p, q, r = u.reshape(-1, 9)
+    print(p)
+
 
 def main2():
     data = DataLoader()
@@ -70,4 +79,4 @@ def main2():
 
 
 if __name__ == "__main__":
-    main2()
+    main()
