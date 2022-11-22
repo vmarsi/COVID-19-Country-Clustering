@@ -6,12 +6,11 @@ from scipy.integrate import odeint
 
 class EpidemicModelBase(ABC):
     def __init__(self, model_data, compartments):
-        vals = [model_data.age_data[keys]["age"] for keys in model_data.age_data.keys()]
-        array = np.array(vals)
-        self.population = array
+        vals_hun = model_data.age_data["Hungary"]["age"]
+        self.population = vals_hun
         self.compartments = compartments
         self.c_idx = {comp: idx for idx, comp in enumerate(self.compartments)}
-        self.n_age = array.shape[1]
+        self.n_age = len(vals_hun)
 
     def initialize(self):
         iv = {key: np.zeros(self.n_age) for key in self.compartments}
@@ -33,7 +32,8 @@ class EpidemicModelBase(ABC):
         return np.array(odeint(self.get_model, initial_values, t, args=(parameters, cm)))
 
     def get_array_from_dict(self, comp_dict):
-        return np.array([comp_dict[comp] for comp in self.compartments]).flatten()
+        arr = np.array([comp_dict[comp] for comp in self.compartments])
+        return arr.flatten()
 
     def get_initial_values(self):
         iv = self.initialize()
