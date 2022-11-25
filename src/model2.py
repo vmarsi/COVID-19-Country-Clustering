@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from src.r0 import R0Generator
 
 import numpy as np
 from scipy.integrate import odeint
@@ -112,3 +113,7 @@ class RostModelHungary(EpidemicModelBase):
     def get_ventilated(self, solution):
         idx = self.c_idx["ic"]
         return self.aggregate_by_age(solution, idx)
+
+    def get_r0_value(self, ps, cm):
+        r0generator = R0Generator(param=ps)
+        return r0generator.get_eig_val(cm) * ps["beta"]

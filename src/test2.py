@@ -60,6 +60,9 @@ def main3():
             data.model_parameters_data.update({"beta": round(betas[k], 3)})
     print(data.model_parameters_data["beta"])
 
+    r0 = model.get_r0_value(ps=data.model_parameters_data, cm=full_contact_mx)
+    print("r0 = ", r0)
+
 
 def main4():
     data = DataLoader()
