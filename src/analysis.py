@@ -56,7 +56,7 @@ def hungary_contacts(data_tr):
             cbar.ax.tick_params(labelsize=tick_font_size)
         plt.xticks(ticks, fontsize=24)
         plt.yticks(ticks, fontsize=24)
-        plt.savefig("../plots/" + "hungary_" + typ.split("contact_")[1] + ".pdf")
+        plt.savefig("C:/Users/Viktor/Pictures/plot/" + "hungary_" + typ.split("contact_")[1] + ".pdf")
 
 
 def country_contacts(data_tr):
@@ -74,7 +74,7 @@ def country_contacts(data_tr):
             cbar = plt.colorbar(img)
             tick_font_size = 25
             cbar.ax.tick_params(labelsize=tick_font_size)
-        plt.savefig("../plots/" + country + ".pdf")
+        plt.savefig("C:/Users/Viktor/Pictures/plot/" + country + ".pdf")
 
 
 def main():
