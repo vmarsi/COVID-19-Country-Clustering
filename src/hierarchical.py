@@ -62,7 +62,7 @@ class Hierarchical:
                         interpolation="nearest",
                         vmin=0)
         plt.colorbar(az)
-        plt.savefig("../plots/" + self.img_prefix + "_" + "distances.pdf")
+        plt.savefig("C:/Users/Viktor/Pictures/plot/" + self.img_prefix + "_" + "distances.pdf")
 
     def run(self, threshold: float):
         # calculate ordered distance matrix
@@ -73,6 +73,8 @@ class Hierarchical:
 
         #  Original uncolored Dendrogram
         self.plot_dendrogram(res=res)
+
+        self.plot_distances()
 
         #  Colored Dendrogram based on threshold (4 clusters)
         # cutting the dendrogram where the gap between two successive merges is at the largest.
@@ -145,4 +147,4 @@ class Hierarchical:
         plt.ylabel('Distance between Clusters', fontsize=30)
         plt.tight_layout()
         axes.tick_params(axis='both', which='major', labelsize=26)
-        plt.savefig("../plots/" + self.img_prefix + "_" + "ordered_distance_3.pdf")
+        plt.savefig("C:/Users/Viktor/Pictures/plot/" + self.img_prefix + "_" + "ordered_distance_3.pdf")
