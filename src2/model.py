@@ -6,8 +6,8 @@ from scipy.integrate import odeint
 
 
 class EpidemicModelBase(ABC):
-    def __init__(self, model_data, compartments):
-        vals_hun = model_data.age_data["Hungary"]["age"]
+    def __init__(self, model_data, compartments, country):
+        vals_hun = model_data.age_data[country]["age"]
         self.population = vals_hun
         self.compartments = compartments
         self.c_idx = {comp: idx for idx, comp in enumerate(self.compartments)}
@@ -51,13 +51,13 @@ class EpidemicModelBase(ABC):
 
 
 class RostModelHungary(EpidemicModelBase):
-    def __init__(self, model_data):
+    def __init__(self, model_data, country):
         compartments = ["s", "l1", "l2",
                         "ip", "ia1", "ia2", "ia3",
                         "is1", "is2", "is3",
                         "ih", "ic", "icr",
                         "r", "d", "c"]
-        super().__init__(model_data=model_data, compartments=compartments)
+        super().__init__(model_data=model_data, compartments=compartments, country=country)
         self.time_max = 400
         self.time_vector = np.linspace(0, self.time_max, self.time_max)
 
@@ -113,7 +113,3 @@ class RostModelHungary(EpidemicModelBase):
     def get_ventilated(self, solution):
         idx = self.c_idx["ic"]
         return self.aggregate_by_age(solution, idx)
-
-    def get_r0_value(self, ps, cm):
-        r0generator = R0Generator(param=ps)
-        return r0generator.get_eig_val(cm) * ps["beta"]
