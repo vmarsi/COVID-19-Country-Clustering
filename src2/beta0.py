@@ -38,18 +38,18 @@ class TransmissionRateCalc:
         deaths = np.zeros(100)
         dicti = dict()
         i = 0
-        for beta in np.arange(0.02, 1.01, 0.01):
+        for beta in np.arange(0.01, 1.01, 0.01):
             betas[i] = beta
             self.data.model_parameters_data.update({"beta": beta})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
                                      cm=self.contact_mtx)
             deaths[i] = np.sum(model.get_deaths(solution=sol))
-            i += 1
             dicti.update({deaths[i]: i})
-        deaths_min = min(abs(deaths - self.final_death_rate * np.sum(model.population)))
-        beta = 0
-        for k in range(len(deaths)):
-            if deaths[k] == self.final_death_rate * np.sum(model.population) - deaths_min \
-                    or deaths[k] == deaths_min + self.final_death_rate * np.sum(model.population):
-                beta = round(betas[k], 3)
-        return beta
+            i += 1
+        deaths_diff = self.final_death_rate * np.sum(model.population) - deaths
+        deaths_min_diff = min(deaths_diff[np.where(deaths_diff >= 0)])
+        beta_0 = 0
+        for k in range(len(deaths_diff)):
+            if deaths_diff[k] == deaths_min_diff:
+                beta_0 = round(betas[k], 3)
+        return beta_0
