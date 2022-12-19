@@ -1,8 +1,6 @@
 from src2.beta0 import TransmissionRateCalc
 from src2.dataloader import DataLoader
 
-import numpy as np
-
 
 class Standardizer:
     def __init__(self, dl: DataLoader, concept: str, base_r0: float = 1.4, final_death_rate: float = 0.001):
