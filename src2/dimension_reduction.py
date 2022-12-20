@@ -12,8 +12,9 @@ class DimRed:
         input: 39 countries each 16 * 16 matrix concatenated row wise and column wise
         output: 39 countries each 2 * 2 matrix, and 39 * 4 (2 * 2 flatten matrix)
     """
-    def __init__(self, stand: Standardizer):
+    def __init__(self, stand: Standardizer, dim_red: str):
         self.stand = stand
+        self.dim_red = dim_red
 
         self.contact_matrix = self.stand.stand_mtxs
         self.stacked_cm = np.vstack(self.contact_matrix)
@@ -21,10 +22,26 @@ class DimRed:
         self.contact_matrix_transposed = self.transposed(self.stand.stand_mtxs)
         self.stacked_cm_t = np.vstack(self.contact_matrix_transposed)
 
+        self.cm_for_1dpca = self.get_mtx_for_1dpca(self.stand.stand_mtxs)
+
         self.data_split = []
         self.proj_matrix_1 = []
         self.proj_matrix_2 = []
-        self.pca_reduced = []
+        self.data_cm_pca = []
+
+    def run(self):
+        if self.dim_red == "PCA":
+            pca = PCA(n_components=4)
+            pca.fit(self.cm_for_1dpca)
+            data_pca = pca.transform(self.cm_for_1dpca)
+            print("Explained variance ratios:",
+                  pca.explained_variance_ratio_,
+                  "->", sum(pca.explained_variance_ratio_))
+        elif self.dim_red == "2DPCA":
+            data_pca = self.apply_dpca()
+        else:
+            raise Exception("Provide a type for dimensionality reduction.")
+        self.data_cm_pca = data_pca
 
     @staticmethod
     def transposed(data):
@@ -33,6 +50,15 @@ class DimRed:
             data_t = data[_].T
             transposed.append(data_t)
         return np.array(transposed)
+
+    @staticmethod
+    def get_mtx_for_1dpca(data):
+        upper_tri_indexes = np.triu_indices(16)
+        mtx = []
+        for _ in range(len(data)):
+            data_tri = data[_][upper_tri_indexes]
+            mtx.append(data_tri)
+        return np.array(mtx)
 
     @staticmethod
     def preprocess_data(data):
@@ -87,4 +113,5 @@ class DimRed:
         matrix = self.proj_matrix_1.T @ self.data_split @ self.proj_matrix_2
 
         # Now reshape the matrix to get desired 39 * 4
-        self.pca_reduced = matrix.reshape((39, 4))
+        features = matrix.reshape((39, 4))
+        return features
