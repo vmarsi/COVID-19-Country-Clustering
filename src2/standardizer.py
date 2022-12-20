@@ -29,7 +29,7 @@ class Standardizer:
 
 def main():
     dl = DataLoader()
-    standardizer = Standardizer(dl=dl, concept="final_death_rate", base_r0=1.4)
+    standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
     standardizer.run()
 
 
