@@ -10,7 +10,7 @@ class Standardizer:
         self.concept = concept
         self.base_r0 = base_r0
         self.final_death_rate = final_death_rate
-        self.stand_mtxs = np.zeros((39, 16, 16))
+        self.stand_mtxs = []
 
     def run(self):
         self.dl.model_parameters_data.update({"calculated_beta_0": np.zeros(39)})
@@ -21,16 +21,15 @@ class Standardizer:
             beta_calc = beta0.run()
             stand_mtx = beta_calc * beta0.contact_mtx
             self.dl.model_parameters_data["calculated_beta_0"][i] = beta_calc
-            self.stand_mtxs[i] = stand_mtx
-            i += 1
-            print(i)
-        print(self.dl.model_parameters_data["calculated_beta_0"])
+            self.stand_mtxs.append(stand_mtx)
+        self.stand_mtxs = np.array(self.stand_mtxs)
 
 
 def main():
     dl = DataLoader()
     standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
     standardizer.run()
+    print(standardizer.stand_mtxs)
 
 
 if __name__ == "__main__":
