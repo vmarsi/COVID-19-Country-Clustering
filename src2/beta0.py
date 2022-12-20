@@ -23,6 +23,8 @@ class TransmissionRateCalc:
             return self.base_r0 / r0generator.get_eig_val(contact_mtx=self.contact_mtx)
         elif self.concept == "final_death_rate":
             return self.death_beta_0()
+        else:
+            raise Exception("Provide a method for calculating beta_0.")
 
     def get_contact_mtx(self):
         contact_home = self.data.contact_data[self.country]["home"]
