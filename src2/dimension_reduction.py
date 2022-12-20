@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
 
+from src2.dataloader import DataLoader
 from src2.standardizer import Standardizer
 
 
@@ -15,6 +16,8 @@ class DimRed:
     def __init__(self, stand: Standardizer, dim_red: str):
         self.stand = stand
         self.dim_red = dim_red
+
+        self.stand.run()
 
         self.contact_matrix = self.stand.stand_mtxs
         self.stacked_cm = np.vstack(self.contact_matrix)
@@ -37,7 +40,7 @@ class DimRed:
             print("Explained variance ratios:",
                   pca.explained_variance_ratio_,
                   "->", sum(pca.explained_variance_ratio_))
-        elif self.dim_red == "2DPCA":
+        elif self.dim_red == "2D2PCA":
             data_pca = self.apply_dpca()
         else:
             raise Exception("Provide a type for dimensionality reduction.")
@@ -115,3 +118,15 @@ class DimRed:
         # Now reshape the matrix to get desired 39 * 4
         features = matrix.reshape((39, 4))
         return features
+
+
+def main():
+    dl = DataLoader()
+    standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
+    dimred = DimRed(stand=standardizer, dim_red="PCA")
+    dimred.run()
+    print(dimred.data_cm_pca)
+
+
+if __name__ == "__main__":
+    main()
