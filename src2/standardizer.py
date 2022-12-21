@@ -24,14 +24,3 @@ class Standardizer:
             self.dl.model_parameters_data["calculated_beta_0"][i] = beta_calc
             stand_mtxs_temp.append(stand_mtx)
         self.stand_mtxs = np.array(stand_mtxs_temp)
-
-
-def main():
-    dl = DataLoader()
-    standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
-    standardizer.run()
-    print(standardizer.stand_mtxs)
-
-
-if __name__ == "__main__":
-    main()

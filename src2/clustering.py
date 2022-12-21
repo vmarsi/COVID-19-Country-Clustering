@@ -1,14 +1,11 @@
-import os
-
 from matplotlib import pyplot as plt
-import numpy as np
-import pandas as pd
-import scipy.cluster.hierarchy as sch
+from src2.dimension_reduction import DimRed
 from sklearn.metrics.pairwise import euclidean_distances, manhattan_distances
 
-from src2.dataloader import DataLoader
-from src2.dimension_reduction import DimRed
-from src2.standardizer import Standardizer
+import numpy as np
+import os
+import pandas as pd
+import scipy.cluster.hierarchy as sch
 
 
 class Clustering:
@@ -153,15 +150,3 @@ class Clustering:
         plt.tight_layout()
         axes.tick_params(axis='both', which='major', labelsize=26)
         plt.savefig("../plots2/" + self.img_prefix + "_" + "ordered_distance_3.pdf")
-
-
-def main():
-    dl = DataLoader()
-    standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
-    dimred = DimRed(stand=standardizer, dim_red="PCA")
-    clustering = Clustering(dimred=dimred, img_prefix="pca_", threshold=0.25)
-    clustering.run()
-
-
-if __name__ == "__main__":
-    main()

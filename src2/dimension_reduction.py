@@ -1,10 +1,8 @@
-import numpy as np
-
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
-
-from src2.dataloader import DataLoader
 from src2.standardizer import Standardizer
+
+import numpy as np
 
 
 class DimRed:
@@ -118,15 +116,3 @@ class DimRed:
         # Now reshape the matrix to get desired 39 * 4
         features = matrix.reshape((39, 4))
         return features
-
-
-def main():
-    dl = DataLoader()
-    standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
-    dimred = DimRed(stand=standardizer, dim_red="PCA")
-    dimred.run()
-    print(dimred.data_cm_pca)
-
-
-if __name__ == "__main__":
-    main()
