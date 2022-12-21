@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from src.r0 import R0Generator
 
 import numpy as np
 from scipy.integrate import odeint
