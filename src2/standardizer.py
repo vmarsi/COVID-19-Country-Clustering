@@ -15,14 +15,15 @@ class Standardizer:
     def run(self):
         self.dl.model_parameters_data.update({"calculated_beta_0": np.zeros(39)})
         i = 0
+        stand_mtxs_temp = []
         for country in self.dl.contact_data.keys():
             beta0 = TransmissionRateCalc(data=self.dl, country=country, concept=self.concept, base_r0=self.base_r0,
                                          final_death_rate=self.final_death_rate)
             beta_calc = beta0.run()
             stand_mtx = beta_calc * beta0.contact_mtx
             self.dl.model_parameters_data["calculated_beta_0"][i] = beta_calc
-            self.stand_mtxs.append(stand_mtx)
-        self.stand_mtxs = np.array(self.stand_mtxs)
+            stand_mtxs_temp.append(stand_mtx)
+        self.stand_mtxs = np.array(stand_mtxs_temp)
 
 
 def main():
