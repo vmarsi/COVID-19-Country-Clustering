@@ -15,8 +15,6 @@ class DimRed:
         self.stand = stand
         self.dim_red = dim_red
 
-        self.stand.run()
-
         self.contact_matrix = self.stand.stand_mtxs
         self.stacked_cm = np.vstack(self.contact_matrix)
 
