@@ -12,7 +12,6 @@ class Clustering:
     def __init__(self, dimred: DimRed, img_prefix: str, threshold: float, dist: str = "euclidean"):
 
         self.dimred = dimred
-        self.dimred.run()
 
         self.country_names = list(self.dimred.stand.dl.contact_data.keys())
         self.img_prefix = img_prefix
