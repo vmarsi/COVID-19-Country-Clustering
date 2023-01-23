@@ -11,15 +11,16 @@ class DimRed:
         input: 39 countries each 16 * 16 matrix concatenated row wise and column wise
         output: 39 countries each 2 * 2 matrix, and 39 * 4 (2 * 2 flatten matrix)
     """
-    def __init__(self, stand: Standardizer, dim_red: str):
+    def __init__(self, stand: Standardizer, dim_red: str, pca_comps: int = 4):
         self.stand = stand
         self.dim_red = dim_red
+        self.pca_comps = pca_comps
         self.data_cm_pca = []
 
     def run(self):
         if self.dim_red == "PCA":
             cm_for_1dpca = self.get_mtx_for_1dpca(self.stand.stand_mtxs)
-            pca = PCA(n_components=4)
+            pca = PCA(n_components=self.pca_comps)
             pca.fit(cm_for_1dpca)
             data_pca = pca.transform(cm_for_1dpca)
             print("Explained variance ratios:",
