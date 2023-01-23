@@ -14,25 +14,14 @@ class DimRed:
     def __init__(self, stand: Standardizer, dim_red: str):
         self.stand = stand
         self.dim_red = dim_red
-
-        self.contact_matrix = self.stand.stand_mtxs
-        self.stacked_cm = np.vstack(self.contact_matrix)
-
-        self.contact_matrix_transposed = self.transposed(self.stand.stand_mtxs)
-        self.stacked_cm_t = np.vstack(self.contact_matrix_transposed)
-
-        self.cm_for_1dpca = self.get_mtx_for_1dpca(self.stand.stand_mtxs)
-
-        self.data_split = []
-        self.proj_matrix_1 = []
-        self.proj_matrix_2 = []
         self.data_cm_pca = []
 
     def run(self):
         if self.dim_red == "PCA":
+            cm_for_1dpca = self.get_mtx_for_1dpca(self.stand.stand_mtxs)
             pca = PCA(n_components=4)
-            pca.fit(self.cm_for_1dpca)
-            data_pca = pca.transform(self.cm_for_1dpca)
+            pca.fit(cm_for_1dpca)
+            data_pca = pca.transform(cm_for_1dpca)
             print("Explained variance ratios:",
                   pca.explained_variance_ratio_,
                   "->", sum(pca.explained_variance_ratio_))
@@ -68,7 +57,9 @@ class DimRed:
         return data_scaled
 
     def column_pca(self, col_dim: int = 2):
-        data_scaled = self.preprocess_data(data=self.stacked_cm)
+        contact_matrix = self.stand.stand_mtxs
+        stacked_cm = np.vstack(contact_matrix)
+        data_scaled = self.preprocess_data(data=stacked_cm)
         pca_1 = PCA(n_components=col_dim)
         pca_1.fit(data_scaled)
 
@@ -83,7 +74,9 @@ class DimRed:
         return proj_matrix_1
 
     def row_pca(self, row_dim: int = 2):
-        data_scaled_2 = self.preprocess_data(data=self.stacked_cm_t)
+        contact_matrix_transposed = self.transposed(self.stand.stand_mtxs)
+        stacked_cm_t = np.vstack(contact_matrix_transposed)
+        data_scaled_2 = self.preprocess_data(data=stacked_cm_t)
 
         pca_2 = PCA(n_components=row_dim)
         pca_2.fit(data_scaled_2)
@@ -100,16 +93,18 @@ class DimRed:
 
     def apply_dpca(self):
         # Now split concatenated original data into 39 sub-arrays of equal size i.e. 39 countries.
-        data_scaled = self.preprocess_data(data=self.stacked_cm)
+        contact_matrix = self.stand.stand_mtxs
+        stacked_cm = np.vstack(contact_matrix)
+        data_scaled = self.preprocess_data(data=stacked_cm)
         split = np.array_split(data_scaled, 39)
-        self.data_split = np.array(split)
+        data_split = np.array(split)
         # Get projection matrix for column direction
-        self.proj_matrix_1 = self.column_pca()
+        proj_matrix_1 = self.column_pca()
         # Get projection matrix for row direction
-        self.proj_matrix_2 = self.row_pca()
+        proj_matrix_2 = self.row_pca()
 
         # Now apply (2D)^2 PCA simultaneously using projection matrix 1 and 2
-        matrix = self.proj_matrix_1.T @ self.data_split @ self.proj_matrix_2
+        matrix = proj_matrix_1.T @ data_split @ proj_matrix_2
 
         # Now reshape the matrix to get desired 39 * 4
         features = matrix.reshape((39, 4))
