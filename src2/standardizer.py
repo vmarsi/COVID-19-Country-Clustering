@@ -11,6 +11,7 @@ class Standardizer:
         self.base_r0 = base_r0
         self.final_death_rate = final_death_rate
         self.stand_mtxs = []
+        self.data_all_dict = dict()
 
     def run(self):
         self.dl.model_parameters_data.update({"calculated_beta_0": np.zeros(39)})
@@ -23,4 +24,13 @@ class Standardizer:
             stand_mtx = beta_calc * beta0.contact_mtx
             self.dl.model_parameters_data["calculated_beta_0"][i] = beta_calc
             stand_mtxs_temp.append(stand_mtx)
+            self.data_all_dict.update(
+                {country: {"beta": beta_calc,
+                           "contact_full": beta0.contact_mtx,
+                           "contact_home": self.dl.contact_data[country]["home"],
+                           "contact_school": self.dl.contact_data[country]["school"],
+                           "contact_work": self.dl.contact_data[country]["work"],
+                           "contact_other": self.dl.contact_data[country]["other"]
+                           }
+                 })
         self.stand_mtxs = np.array(stand_mtxs_temp)
