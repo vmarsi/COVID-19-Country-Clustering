@@ -17,9 +17,9 @@ class DataLoader:
         """
         Constructor that defines file paths and loads all data
         """
-        self._age_data_file = "../data/age_data.xlsx"
+        self._age_data_file = "../data/age_data2.xls"
         self.contact_types = np.array(["home", "school", "work", "other"])
-        self._contact_data_file = ["../data/contact_" + c_type + ".xls" for c_type in self.contact_types]
+        self._contact_data_file = ["../data/contact_" + c_type + "2.xls" for c_type in self.contact_types]
         self._model_parameters_data_file = "../data/model_parameters.json"
         # Get values for data members
         self._get_data()
@@ -29,8 +29,8 @@ class DataLoader:
         Main function for data loading - defines all data members
         :return: None
         """
-        # self._get_age_data()
-        # self._get_contact_mtx()
+        self._get_age_data()
+        self._get_contact_mtx()
         self._get_model_parameters_data()
 
     def _get_age_data(self):
