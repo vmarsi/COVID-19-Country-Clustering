@@ -29,8 +29,8 @@ class DataLoader:
         Main function for data loading - defines all data members
         :return: None
         """
-        self._get_age_data()
-        self._get_contact_mtx()
+        # self._get_age_data()
+        # self._get_contact_mtx()
         self._get_model_parameters_data()
 
     def _get_age_data(self):
@@ -51,8 +51,6 @@ class DataLoader:
         wb.unload_sheet(0)
 
         output = dict()
-        population_global = 0
-        age_distribution_global = None
 
         for row in datalist:
             # Store data for units
@@ -60,14 +58,7 @@ class DataLoader:
             # Assumes that the data file contains age distribution from second column until the end
             value = np.array(row[1:]).astype(int)
             output.update({key: {"pop": np.sum(value), "age": value}})
-            # Store data for the whole country
-            population_global += output[key]["pop"]
-            if age_distribution_global is None:
-                age_distribution_global = copy.deepcopy(output[key]["age"])
-            else:
-                age_distribution_global += output[key]["age"]
 
-        self.global_unit_set = {"pop": population_global, "age": age_distribution_global}
         self.age_data = output
 
     def _get_contact_mtx(self):
@@ -129,5 +120,3 @@ class DataLoader:
         matrix_1 = matrix * age_distribution
         output = (matrix_1 + matrix_1.T) / (2 * age_distribution)  # we symmetrize the matrix by the formula
         return output
-
-
