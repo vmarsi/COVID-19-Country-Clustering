@@ -23,9 +23,9 @@ class DimRed:
             pca = PCA(n_components=self.pca_comps)
             pca.fit(cm_for_1dpca)
             data_pca = pca.transform(cm_for_1dpca)
-            print("Explained variance ratios:",
-                  pca.explained_variance_ratio_,
-                  "->", sum(pca.explained_variance_ratio_))
+            #print("Explained variance ratios:",
+            #      pca.explained_variance_ratio_,
+            #      "->", sum(pca.explained_variance_ratio_))
         elif self.dim_red == "2D2PCA":
             data_pca = self.apply_dpca()
         else:
@@ -64,10 +64,10 @@ class DimRed:
         pca_1 = PCA(n_components=col_dim)
         pca_1.fit(data_scaled)
 
-        print("Explained variance ratios:", pca_1.explained_variance_ratio_,
-              "->", sum(pca_1.explained_variance_ratio_), "Eigenvectors:",
-              pca_1.components_,  # (col_dim, 16)
-              "Singular values:", pca_1.singular_values_)  # col_dim leading eigenvalues
+        #print("Explained variance ratios:", pca_1.explained_variance_ratio_,
+        #      "->", sum(pca_1.explained_variance_ratio_), "Eigenvectors:",
+        #      pca_1.components_,  # (col_dim, 16)
+        #      "Singular values:", pca_1.singular_values_)  # col_dim leading eigenvalues
 
         # Projection matrix for row direction matrix
         proj_matrix_1 = pca_1.components_.T  # 16 * col_dim projection matrix 1
@@ -82,10 +82,10 @@ class DimRed:
         pca_2 = PCA(n_components=row_dim)
         pca_2.fit(data_scaled_2)
 
-        print("Explained variance ratios 2:", pca_2.explained_variance_ratio_,
-              "->", sum(pca_2.explained_variance_ratio_), "Eigenvectors 2:",
-              pca_2.components_,  # (row_dim, 16)
-              "Singular values 2:", pca_2.singular_values_)  # row_dim leading eigenvalues
+        #print("Explained variance ratios 2:", pca_2.explained_variance_ratio_,
+        #      "->", sum(pca_2.explained_variance_ratio_), "Eigenvectors 2:",
+        #      pca_2.components_,  # (row_dim, 16)
+        #      "Singular values 2:", pca_2.singular_values_)  # row_dim leading eigenvalues
         # print("PC 2", pc2)
 
         # Projection matrix for column direction matrix
