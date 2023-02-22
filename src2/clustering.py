@@ -16,6 +16,7 @@ class Clustering:
         self.country_names = list(self.dimred.stand.dl.contact_data.keys())
         self.img_prefix = img_prefix
         self.threshold = threshold
+        self.clusters = dict()
         if dist == "euclidean":
             self.get_distance_matrix = self.get_euclidean_distance
         elif dist == "manhattan":
@@ -92,7 +93,8 @@ class Clustering:
         order = sch.fcluster(res, self.threshold, criterion='distance')
         if verbose:
             for x in np.unique(order):
-                print("cluster " + str(x) + ":", dt.columns[order == x])
+                self.clusters.update({x: list(dt.columns[order == x])})
+                # print("cluster " + str(x) + ":", dt.columns[order == x])
         # Perform an indirect sort along the along first axis
         columns = [dt.columns.tolist()[i] for i in list((np.argsort(order)))]
         # Place columns(sorted countries) in the both axes
