@@ -1,8 +1,13 @@
+import kmedoids
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+from src2.beta0 import TransmissionRateCalc
+from src2.clustering import Clustering
 from src2.dataloader import DataLoader
+from src2.dimension_reduction import DimRed
+from src2.model import RostModelHungary
 from src2.standardizer import Standardizer
 
 os.makedirs("../plots2", exist_ok=True)
@@ -41,6 +46,17 @@ def country_contacts(stan):
         plt.savefig("../plots2/" + country + ".pdf")
 
 
+def index(country: str):
+    dl = DataLoader()
+    i = 0
+    for cy in dl.age_data.keys():
+        if cy != country:
+            i += 1
+        else:
+            break
+    return i
+
+
 def main():
     dl = DataLoader()
     standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
@@ -49,5 +65,71 @@ def main():
     country_contacts(stan=standardizer)
 
 
+def main2():
+    data = DataLoader()
+    for country in ["Armenia", "Netherlands", "Germany"]:
+        trc = TransmissionRateCalc(data=data, country=country, concept="base_r0")
+        stan = Standardizer(dl=data, concept="base_r0")
+        stan.run()
+        model = RostModelHungary(model_data=data, country=country)
+        stan.dl.model_parameters_data.update({"beta": stan.data_all_dict[country]["beta"]})
+        sol = model.get_solution(t=model.time_vector, parameters=stan.dl.model_parameters_data, cm=trc.contact_mtx)
+        incidence = np.diff(model.get_cumulative(solution=sol))
+        plt.plot(model.time_vector[1:], incidence / data.age_data[country]["pop"])
+    plt.show()
+
+
+def main3():
+    dl = DataLoader()
+    standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
+    standardizer.run()
+    dimred = DimRed(stand=standardizer, dim_red="2D2PCA")
+    dimred.run()
+    clustering = Clustering(dimred=dimred, img_prefix="2dpca_", threshold=5)
+    columns, dt, res = clustering.calculate_ordered_distance_matrix()
+
+    clus_and_feat = dict()
+    for i in clustering.clusters.keys():
+        temp = dict()
+        for country in clustering.clusters[i]:
+            ind = index(country=country)
+            features = dimred.apply_dpca()
+            temp.update({country: features[ind]})
+        clus_and_feat.update({i: temp})
+    print(clus_and_feat)
+
+    medoids = list(0 for _ in range(len(clus_and_feat.keys())))
+    for i in clus_and_feat.keys():
+        sum = 0
+        for country in clus_and_feat[i].keys():
+            sum += clus_and_feat[i][country]
+        center = sum / len(clus_and_feat[i])
+        dists = np.zeros(len(clus_and_feat[i]))
+        keys = list(clus_and_feat[i].keys())
+        for k in range(len(clus_and_feat[i].keys())):
+            dists[k] = np.linalg.norm(center - clus_and_feat[i][keys[k]])
+        min = np.min(dists)
+        j = 0
+        for _ in range(len(dists)):
+            if dists[_] != min:
+                j += 1
+            else:
+                break
+        medoids[i-1] = list(clus_and_feat[i].keys())[j]
+    print("Medoids: ", medoids)
+
+    for country in medoids:
+        trc = TransmissionRateCalc(data=dl, country=country, concept="base_r0")
+        stan = Standardizer(dl=dl, concept="base_r0")
+        stan.run()
+        model = RostModelHungary(model_data=dl, country=country)
+        stan.dl.model_parameters_data.update({"beta": stan.data_all_dict[country]["beta"]})
+        sol = model.get_solution(t=model.time_vector, parameters=stan.dl.model_parameters_data, cm=trc.contact_mtx)
+        incidence = np.diff(model.get_cumulative(solution=sol))
+        plt.plot(model.time_vector[1:], incidence / dl.age_data[country]["pop"])
+    plt.legend(medoids, loc="upper left")
+    plt.show()
+
+
 if __name__ == "__main__":
-    main()
+    main3()
