@@ -6,7 +6,7 @@ import numpy as np
 
 
 class TransmissionRateCalc:
-    def __init__(self, data: DataLoader, country: str, concept: str, base_r0: float = 1.4,
+    def __init__(self, data: DataLoader, country: str, concept: str, base_r0: float = 2.2,
                  final_death_rate: float = 0.001):
         self.data = data
         self.country = country
@@ -15,13 +15,16 @@ class TransmissionRateCalc:
         self.final_death_rate = final_death_rate
 
         self.contact_mtx = self.get_contact_mtx()
+        self.time_max = 0
 
     def run(self):
         self.data.model_parameters_data.update({"susc": np.ones(16) * 0.2})
         if self.concept == "base_r0":
             r0generator = R0Generator(param=self.data.model_parameters_data)
+            self.time_max = 400
             return self.base_r0 / r0generator.get_eig_val(contact_mtx=self.contact_mtx)
         elif self.concept == "final_death_rate":
+            self.time_max = 1000
             return self.death_beta_0()
         else:
             raise Exception("Provide a method for calculating beta_0.")
@@ -35,7 +38,7 @@ class TransmissionRateCalc:
         return contact_matrix
 
     def death_beta_0(self):
-        model = RostModelHungary(model_data=self.data, country=self.country)
+        model = RostModelHungary(model_data=self.data, country=self.country, time_max=self.time_max)
         betas = np.zeros(100)
         deaths = np.zeros(100)
         dicti = dict()
