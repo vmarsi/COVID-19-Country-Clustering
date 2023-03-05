@@ -50,14 +50,14 @@ class EpidemicModelBase(ABC):
 
 
 class RostModelHungary(EpidemicModelBase):
-    def __init__(self, model_data, country):
+    def __init__(self, model_data, country, time_max):
         compartments = ["s", "l1", "l2",
                         "ip", "ia1", "ia2", "ia3",
                         "is1", "is2", "is3",
                         "ih", "ic", "icr",
                         "r", "d", "c"]
         super().__init__(model_data=model_data, compartments=compartments, country=country)
-        self.time_max = 400
+        self.time_max = time_max
         self.time_vector = np.linspace(0, self.time_max, self.time_max)
 
     def update_initial_values(self, iv):
