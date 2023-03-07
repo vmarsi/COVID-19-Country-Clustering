@@ -142,5 +142,61 @@ def main4():
     print(wbd)
 
 
+def main5():
+    data = DataLoader()
+    data.model_parameters_data.update({"susc": np.ones(16) * 0.2})
+    model = RostModelHungary(model_data=data, country="Hungary", time_max=1000)
+    a = 0.01
+    b = 1
+    contact_home = data.contact_data["Hungary"]["home"]
+    contact_school = data.contact_data["Hungary"]["school"]
+    contact_work = data.contact_data["Hungary"]["work"]
+    contact_other = data.contact_data["Hungary"]["other"]
+    contact_matrix = contact_home + contact_school + contact_work + contact_other
+
+    beta0 = 5
+    while b - a > 0.01:
+        data.model_parameters_data.update({"beta": a})
+        sol = model.get_solution(t=model.time_vector, parameters=data.model_parameters_data,
+                                 cm=contact_matrix)
+        deaths_a = np.sum(model.get_deaths(solution=sol))
+
+        data.model_parameters_data.update({"beta": b})
+        sol = model.get_solution(t=model.time_vector, parameters=data.model_parameters_data,
+                                 cm=contact_matrix)
+        deaths_b = np.sum(model.get_deaths(solution=sol))
+
+        c = (a+b)/2
+        data.model_parameters_data.update({"beta": c})
+        sol = model.get_solution(t=model.time_vector, parameters=data.model_parameters_data,
+                                 cm=contact_matrix)
+        deaths_c = np.sum(model.get_deaths(solution=sol))
+
+        if 0.001 * np.sum(model.population) - deaths_c == 0:
+            beta0 = c
+            break
+        elif (0.001 * np.sum(model.population) - deaths_a) * (0.001 * np.sum(model.population) - deaths_c) < 0:
+            b = c
+        elif (0.001 * np.sum(model.population) - deaths_b) * (0.001 * np.sum(model.population) - deaths_c) < 0:
+            a = c
+
+    if not beta0 == 0:
+        data.model_parameters_data.update({"beta": a})
+        sol = model.get_solution(t=model.time_vector, parameters=data.model_parameters_data,
+                                 cm=contact_matrix)
+        deaths_a = np.sum(model.get_deaths(solution=sol))
+
+        data.model_parameters_data.update({"beta": b})
+        sol = model.get_solution(t=model.time_vector, parameters=data.model_parameters_data,
+                                 cm=contact_matrix)
+        deaths_b = np.sum(model.get_deaths(solution=sol))
+
+        if abs(0.001 * np.sum(model.population) - deaths_a) < abs(0.001 * np.sum(model.population) - deaths_b):
+            beta0 = a
+        else:
+            beta0 = b
+    return beta0
+
+
 if __name__ == "__main__":
-    main4()
+    main5()
