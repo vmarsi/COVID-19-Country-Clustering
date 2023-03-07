@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from src2.dimension_reduction import DimRed
+from src.dimension_reduction import DimRed
 from sklearn.metrics.pairwise import euclidean_distances, manhattan_distances
 
 import numpy as np

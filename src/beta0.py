@@ -1,6 +1,6 @@
-from src2.dataloader import DataLoader
-from src2.model import RostModelHungary
-from src2.r0 import R0Generator
+from src.dataloader import DataLoader
+from src.model import RostModelHungary
+from src.r0 import R0Generator
 
 import numpy as np
 

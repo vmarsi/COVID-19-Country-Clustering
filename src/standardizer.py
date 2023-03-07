@@ -1,6 +1,6 @@
-from src2.beta0 import TransmissionRateCalc
-from src2.dataloader import DataLoader
-from src2.r0 import R0Generator
+from src.beta0 import TransmissionRateCalc
+from src.dataloader import DataLoader
+from src.r0 import R0Generator
 
 import numpy as np
 

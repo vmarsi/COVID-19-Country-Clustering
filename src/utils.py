@@ -3,12 +3,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from src2.beta0 import TransmissionRateCalc
-from src2.clustering import Clustering
-from src2.dataloader import DataLoader
-from src2.dimension_reduction import DimRed
-from src2.model import RostModelHungary
-from src2.standardizer import Standardizer
+import openpyxl
+import xlrd
+
+from src.beta0 import TransmissionRateCalc
+from src.clustering import Clustering
+from src.dataloader import DataLoader
+from src.dimension_reduction import DimRed
+from src.model import RostModelHungary
+from src.standardizer import Standardizer
 
 os.makedirs("../plots2", exist_ok=True)
 
@@ -81,11 +84,11 @@ def main2():
 
 def main3():
     dl = DataLoader()
-    standardizer = Standardizer(dl=dl, concept="base_r0", base_r0=1.4)
+    standardizer = Standardizer(dl=dl, concept="base_r0")
     standardizer.run()
     dimred = DimRed(stand=standardizer, dim_red="2D2PCA")
     dimred.run()
-    clustering = Clustering(dimred=dimred, img_prefix="2dpca_", threshold=5)
+    clustering = Clustering(dimred=dimred, img_prefix="2dpca_", threshold=1.4)
     columns, dt, res = clustering.calculate_ordered_distance_matrix()
 
     clus_and_feat = dict()
@@ -118,18 +121,26 @@ def main3():
         medoids[i-1] = list(clus_and_feat[i].keys())[j]
     print("Medoids: ", medoids)
 
-    for country in medoids:
-        trc = TransmissionRateCalc(data=dl, country=country, concept="base_r0")
-        stan = Standardizer(dl=dl, concept="base_r0")
-        stan.run()
-        model = RostModelHungary(model_data=dl, country=country)
-        stan.dl.model_parameters_data.update({"beta": stan.data_all_dict[country]["beta"]})
-        sol = model.get_solution(t=model.time_vector, parameters=stan.dl.model_parameters_data, cm=trc.contact_mtx)
-        incidence = np.diff(model.get_cumulative(solution=sol))
-        plt.plot(model.time_vector[1:], incidence / dl.age_data[country]["pop"])
-    plt.legend(medoids, loc="upper left")
-    plt.show()
+
+def main4():
+    dl = DataLoader()
+    wb = xlrd.open_workbook("../data/gdp.xls")
+    sheet = wb.sheet_by_index(0)
+    wb.unload_sheet(0)
+    wbd = dict()
+    for country in dl.contact_data.keys():
+        for i in range(sheet.nrows):
+            if str(sheet.cell(i, 0)) == "text:'" + country + "'":
+                wbd.update({country: [sheet.cell_value(i, sheet.ncols-1)]})
+    wb = xlrd.open_workbook("../data/life_expectancy.xls")
+    sheet = wb.sheet_by_index(0)
+    wb.unload_sheet(0)
+    for country in dl.contact_data.keys():
+        for i in range(sheet.nrows):
+            if str(sheet.cell(i, 0)) == "text:'" + country + "'":
+                wbd[country].append(sheet.cell_value(i, sheet.ncols - 2))
+    print(wbd)
 
 
 if __name__ == "__main__":
-    main3()
+    main4()

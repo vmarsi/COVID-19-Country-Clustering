@@ -1,6 +1,6 @@
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
-from src2.standardizer import Standardizer
+from src.standardizer import Standardizer
 
 import numpy as np
 
