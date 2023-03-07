@@ -22,7 +22,7 @@ class Clustering:
         elif dist == "manhattan":
             self.get_distance_matrix = self.get_manhattan_distance
 
-        os.makedirs("../plots2", exist_ok=True)
+        os.makedirs("../plots", exist_ok=True)
 
     def get_manhattan_distance(self):
         """
@@ -63,7 +63,7 @@ class Clustering:
                         interpolation="nearest",
                         vmin=0)
         plt.colorbar(az)
-        plt.savefig("../plots2/" +
+        plt.savefig("../plots/" +
                     self.img_prefix + "_" + "distances.pdf")
 
     def run(self):
@@ -116,7 +116,7 @@ class Clustering:
         tick_font_size = 115
         cbar.ax.tick_params(labelsize=tick_font_size)
 
-        plt.savefig("../plots2/" + self.img_prefix + "_" + "ordered_distance_1.pdf")
+        plt.savefig("../plots/" + self.img_prefix + "_" + "ordered_distance_1.pdf")
 
     def plot_dendrogram(self, res):
         fig, axes = plt.subplots(1, 1, figsize=(35, 25), dpi=150)
@@ -131,7 +131,7 @@ class Clustering:
         plt.title('Cluster Analysis without threshold', fontsize=50, fontweight="bold")
         plt.ylabel('Distance between Clusters', fontsize=45)
         plt.tight_layout()
-        plt.savefig("../plots2/" + self.img_prefix + "_" + "ordered_distance_2.pdf")
+        plt.savefig("../plots/" + self.img_prefix + "_" + "ordered_distance_2.pdf")
 
     def plot_dendrogram_with_threshold(self, res):
         fig, axes = plt.subplots(1, 1, figsize=(35, 24), dpi=300)
@@ -150,4 +150,4 @@ class Clustering:
         plt.ylabel('Distance between Clusters', fontsize=30)
         plt.tight_layout()
         axes.tick_params(axis='both', which='major', labelsize=26)
-        plt.savefig("../plots2/" + self.img_prefix + "_" + "ordered_distance_3.pdf")
+        plt.savefig("../plots/" + self.img_prefix + "_" + "ordered_distance_3.pdf")

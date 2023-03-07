@@ -13,7 +13,7 @@ from src.dimension_reduction import DimRed
 from src.model import RostModelHungary
 from src.standardizer import Standardizer
 
-os.makedirs("../plots2", exist_ok=True)
+os.makedirs("../plots", exist_ok=True)
 
 
 def hungary_contacts(stan):
@@ -28,7 +28,7 @@ def hungary_contacts(stan):
             cbar.ax.tick_params(labelsize=tick_font_size)
         plt.xticks(ticks, fontsize=24)
         plt.yticks(ticks, fontsize=24)
-        plt.savefig("../plots2/" + "hungary_" + typ.split("contact_")[1] + ".pdf")
+        plt.savefig("../plots/" + "hungary_" + typ.split("contact_")[1] + ".pdf")
 
 
 def country_contacts(stan):
@@ -46,7 +46,7 @@ def country_contacts(stan):
             cbar = plt.colorbar(img)
             tick_font_size = 25
             cbar.ax.tick_params(labelsize=tick_font_size)
-        plt.savefig("../plots2/" + country + ".pdf")
+        plt.savefig("../plots/" + country + ".pdf")
 
 
 def index(country: str):
