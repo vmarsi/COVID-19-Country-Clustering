@@ -41,28 +41,23 @@ class TransmissionRateCalc:
         model = RostModelHungary(model_data=self.data, country=self.country, time_max=self.time_max)
         a = 0.01
         b = 1
-        contact_home = self.data.contact_data[self.country]["home"]
-        contact_school = self.data.contact_data[self.country]["school"]
-        contact_work = self.data.contact_data[self.country]["work"]
-        contact_other = self.data.contact_data[self.country]["other"]
-        contact_matrix = contact_home + contact_school + contact_work + contact_other
 
         beta0 = 5
         while b - a > 0.01:
             self.data.model_parameters_data.update({"beta": a})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
-                                     cm=contact_matrix)
+                                     cm=self.contact_mtx)
             deaths_a = np.sum(model.get_deaths(solution=sol))
 
             self.data.model_parameters_data.update({"beta": b})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
-                                     cm=contact_matrix)
+                                     cm=self.contact_mtx)
             deaths_b = np.sum(model.get_deaths(solution=sol))
 
             c = (a + b) / 2
             self.data.model_parameters_data.update({"beta": c})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
-                                     cm=contact_matrix)
+                                     cm=self.contact_mtx)
             deaths_c = np.sum(model.get_deaths(solution=sol))
 
             if 0.001 * np.sum(model.population) - deaths_c == 0:
@@ -76,16 +71,17 @@ class TransmissionRateCalc:
         if not beta0 == 0:
             self.data.model_parameters_data.update({"beta": a})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
-                                     cm=contact_matrix)
+                                     cm=self.contact_mtx)
             deaths_a = np.sum(model.get_deaths(solution=sol))
 
             self.data.model_parameters_data.update({"beta": b})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
-                                     cm=contact_matrix)
+                                     cm=self.contact_mtx)
             deaths_b = np.sum(model.get_deaths(solution=sol))
 
             if abs(0.001 * np.sum(model.population) - deaths_a) < abs(0.001 * np.sum(model.population) - deaths_b):
                 beta0 = a
             else:
                 beta0 = b
+
         return beta0
