@@ -7,7 +7,7 @@ import numpy as np
 
 class TransmissionRateCalc:
     def __init__(self, data: DataLoader, country: str, concept: str, base_r0: float = 2.2,
-                 final_death_rate: float = 0.001):
+                 final_death_rate: float = 0.01):
         self.data = data
         self.country = country
         self.concept = concept
@@ -60,12 +60,14 @@ class TransmissionRateCalc:
                                      cm=self.contact_mtx)
             deaths_c = np.sum(model.get_deaths(solution=sol))
 
-            if 0.001 * np.sum(model.population) - deaths_c == 0:
+            if self.final_death_rate * np.sum(model.population) - deaths_c == 0:
                 beta0 = c
                 break
-            elif (0.001 * np.sum(model.population) - deaths_a) * (0.001 * np.sum(model.population) - deaths_c) < 0:
+            elif (self.final_death_rate * np.sum(model.population) - deaths_a) * \
+                    (self.final_death_rate * np.sum(model.population) - deaths_c) < 0:
                 b = c
-            elif (0.001 * np.sum(model.population) - deaths_b) * (0.001 * np.sum(model.population) - deaths_c) < 0:
+            elif (self.final_death_rate * np.sum(model.population) - deaths_b) * \
+                    (self.final_death_rate * np.sum(model.population) - deaths_c) < 0:
                 a = c
 
         if not beta0 == 0:
@@ -79,7 +81,8 @@ class TransmissionRateCalc:
                                      cm=self.contact_mtx)
             deaths_b = np.sum(model.get_deaths(solution=sol))
 
-            if abs(0.001 * np.sum(model.population) - deaths_a) < abs(0.001 * np.sum(model.population) - deaths_b):
+            if abs(self.final_death_rate * np.sum(model.population) - deaths_a) < \
+                    abs(self.final_death_rate * np.sum(model.population) - deaths_b):
                 beta0 = a
             else:
                 beta0 = b
