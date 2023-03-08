@@ -6,7 +6,7 @@ import numpy as np
 
 
 class Standardizer:
-    def __init__(self, dl: DataLoader, concept: str, base_r0: float = 2.2, final_death_rate: float = 0.001):
+    def __init__(self, dl: DataLoader, concept: str, base_r0: float = 2.2, final_death_rate: float = 0.01):
         self.dl = dl
         self.concept = concept
         self.base_r0 = base_r0
