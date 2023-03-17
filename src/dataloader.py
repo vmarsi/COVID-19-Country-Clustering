@@ -21,6 +21,7 @@ class DataLoader:
         self.contact_types = np.array(["home", "school", "work", "other"])
         self._contact_data_file = ["../data/contact_" + c_type + ".xls" for c_type in self.contact_types]
         self._model_parameters_data_file = "../data/model_parameters.json"
+        self._indicators_data_file = "../data/indicators.xlsx"
         # Get values for data members
         self._get_data()
 
@@ -32,6 +33,7 @@ class DataLoader:
         self._get_age_data()
         self._get_contact_mtx()
         self._get_model_parameters_data()
+        self._get_indicators_data()
 
     def _get_age_data(self):
         """
@@ -109,6 +111,24 @@ class DataLoader:
                 self.model_parameters_data.update({param: np.array(param_value)})
             else:
                 self.model_parameters_data.update({param: param_value})
+
+    def _get_indicators_data(self):
+        wb = xlrd.open_workbook(self._indicators_data_file)
+        sheet = wb.sheet_by_index(0)
+        wb.unload_sheet(0)
+
+        self.indicators_data = dict()
+        for country in self.contact_data.keys():
+            for i in range(sheet.nrows):
+                if str(sheet.cell(i, 0)) == "text:'" + country + "'":
+                    self.indicators_data.update({country: [float(sheet.cell_value(i, 1))]})
+        for country in self.contact_data.keys():
+            for i in range(sheet.nrows):
+                if str(sheet.cell(i, 0)) == "text:'" + country + "'":
+                    k = 2
+                    while k <= sheet.ncols - 1:
+                        self.indicators_data[country].append(float(sheet.cell_value(i, k)))
+                        k += 1
 
     def _transform_matrix(self, matrix: np.ndarray, country: str):
         """
