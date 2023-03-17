@@ -21,7 +21,7 @@ class DataLoader:
         self.contact_types = np.array(["home", "school", "work", "other"])
         self._contact_data_file = ["../data/contact_" + c_type + ".xls" for c_type in self.contact_types]
         self._model_parameters_data_file = "../data/model_parameters.json"
-        self._indicators_data_file = "../data/indicators.xlsx"
+        self._indicators_data_file = "../data/indicators.xls"
         # Get values for data members
         self._get_data()
 
