@@ -3,6 +3,7 @@ from sklearn import preprocessing
 from src.standardizer import Standardizer
 
 import numpy as np
+import xlrd
 
 
 class DimRed:
@@ -22,12 +23,16 @@ class DimRed:
             cm_for_1dpca = self.get_mtx_for_1dpca(self.stand.stand_mtxs)
             pca = PCA(n_components=self.pca_comps)
             pca.fit(cm_for_1dpca)
-            data_pca = pca.transform(cm_for_1dpca)
+            data_contact = pca.transform(cm_for_1dpca)
+            data_ind = self.get_indicator_features()
+            data_pca = np.concatenate((data_contact, data_ind), axis=1)
             #print("Explained variance ratios:",
             #      pca.explained_variance_ratio_,
             #      "->", sum(pca.explained_variance_ratio_))
         elif self.dim_red == "2D2PCA":
-            data_pca = self.apply_dpca()
+            data_contact = self.apply_dpca()
+            data_ind = self.get_indicator_features()
+            data_pca = np.concatenate((data_contact, data_ind), axis=1)
         else:
             raise Exception("Provide a type for dimensionality reduction.")
         self.data_cm_pca = data_pca
@@ -110,3 +115,15 @@ class DimRed:
         # Now reshape the matrix to get desired 39 * 4
         features = matrix.reshape((39, 4))
         return features
+
+    def get_indicator_features(self):
+        data = np.zeros((39, 20))
+        i = 0
+        for country in self.stand.dl.contact_data.keys():
+            for k in range(20):
+                data[i][k] = self.stand.dl.indicators_data[country][k]
+            i += 1
+        pca = PCA(n_components=4)
+        pca.fit(data)
+        ind_features = pca.transform(data)
+        return ind_features
