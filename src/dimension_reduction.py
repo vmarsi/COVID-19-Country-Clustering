@@ -26,6 +26,7 @@ class DimRed:
             data_contact = pca.transform(cm_for_1dpca)
             data_ind = self.get_indicator_features()
             data_pca = np.concatenate((data_contact, data_ind), axis=1)
+            print(data_pca)
             #print("Explained variance ratios:",
             #      pca.explained_variance_ratio_,
             #      "->", sum(pca.explained_variance_ratio_))
@@ -113,7 +114,7 @@ class DimRed:
         matrix = proj_matrix_1.T @ data_split @ proj_matrix_2
 
         # Now reshape the matrix to get desired 39 * 4
-        features = matrix.reshape((39, 4))
+        features = matrix.reshape((39, self.pca_comps))
         return features
 
     def get_indicator_features(self):
@@ -123,7 +124,23 @@ class DimRed:
             for k in range(20):
                 data[i][k] = self.stand.dl.indicators_data[country][k]
             i += 1
-        pca = PCA(n_components=4)
+
+        pca = PCA(n_components=self.pca_comps)
         pca.fit(data)
         ind_features = pca.transform(data)
-        return ind_features
+        norm_ind_features = self.normalize_data_ind(data=data, features=ind_features)
+        return norm_ind_features
+
+    def normalize_data_ind(self, data, features):
+        means = np.zeros(self.pca_comps)
+        norm_features = np.zeros((len(features), self.pca_comps))
+        means[0] = np.mean(data.T[0])
+        means[1] = np.mean(data.T[14])
+        means[2] = means[1]
+        means[3] = np.mean(data.T[15])
+
+        for j in range(self.pca_comps):
+            for i in range(len(features)):
+                norm_features[i][j] = features[i][j] / means[j]
+
+        return norm_features
