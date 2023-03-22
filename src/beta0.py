@@ -70,7 +70,7 @@ class TransmissionRateCalc:
                     (self.final_death_rate * np.sum(model.population) - deaths_c) < 0:
                 a = c
 
-        if not beta0 == 0:
+        if beta0 == 5:
             self.data.model_parameters_data.update({"beta": a})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
                                      cm=self.contact_mtx)
