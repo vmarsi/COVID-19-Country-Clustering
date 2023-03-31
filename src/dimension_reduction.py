@@ -125,22 +125,11 @@ class DimRed:
                 data[i][k] = self.stand.dl.indicators_data[country][k]
             i += 1
 
+        data_means = np.mean(data, axis=0)
+        data_stds = np.std(data, axis=0)
+        norm_data = (data - data_means)/data_stds
+
         pca = PCA(n_components=self.pca_comps)
-        pca.fit(data)
-        ind_features = pca.transform(data)
-        norm_ind_features = self.normalize_data_ind(data=data, features=ind_features)
-        return norm_ind_features
-
-    def normalize_data_ind(self, data, features):
-        means = np.zeros(self.pca_comps)
-        norm_features = np.zeros((len(features), self.pca_comps))
-        means[0] = np.mean(data.T[0])
-        means[1] = np.mean(data.T[14])
-        means[2] = means[1]
-        means[3] = np.mean(data.T[15])
-
-        for j in range(self.pca_comps):
-            for i in range(len(features)):
-                norm_features[i][j] = features[i][j] / means[j]
-
-        return norm_features
+        pca.fit(norm_data)
+        ind_features = pca.transform(norm_data)
+        return ind_features
