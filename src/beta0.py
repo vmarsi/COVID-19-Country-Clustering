@@ -7,7 +7,7 @@ import numpy as np
 
 class TransmissionRateCalc:
     def __init__(self, data: DataLoader, country: str, concept: str, base_r0: float = 2.2,
-                 final_death_rate: float = 0.01):
+                 final_death_rate: float = 0.001):
         self.data = data
         self.country = country
         self.concept = concept
@@ -24,7 +24,7 @@ class TransmissionRateCalc:
             self.time_max = 400
             return self.base_r0 / r0generator.get_eig_val(contact_mtx=self.contact_mtx)
         elif self.concept == "final_death_rate":
-            self.time_max = 1000
+            self.time_max = 600
             return self.death_beta_0()
         else:
             raise Exception("Provide a method for calculating beta_0.")
@@ -39,26 +39,32 @@ class TransmissionRateCalc:
 
     def death_beta_0(self):
         model = RostModelHungary(model_data=self.data, country=self.country, time_max=self.time_max)
+        r0generator = R0Generator(param=self.data.model_parameters_data)
         a = 0.01
-        b = 1
+        b = min(10 / r0generator.get_eig_val(contact_mtx=self.contact_mtx), 1)
 
         beta0 = 5
-        while b - a > 0.01:
+        while b - a > 0.001:
             self.data.model_parameters_data.update({"beta": a})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
                                      cm=self.contact_mtx)
-            deaths_a = np.sum(model.get_deaths(solution=sol))
+            deaths_a = model.get_deaths(solution=sol)[-1]
 
             self.data.model_parameters_data.update({"beta": b})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
                                      cm=self.contact_mtx)
-            deaths_b = np.sum(model.get_deaths(solution=sol))
+            deaths_b = model.get_deaths(solution=sol)[-1]
 
             c = (a + b) / 2
             self.data.model_parameters_data.update({"beta": c})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
                                      cm=self.contact_mtx)
-            deaths_c = np.sum(model.get_deaths(solution=sol))
+            deaths_c = model.get_deaths(solution=sol)[-1]
+            #r0generator = R0Generator(param=self.data.model_parameters_data)
+            #rho = r0generator.get_eig_val(contact_mtx=self.contact_mtx)
+            #r0 = b * rho
+            #print(r0)
+            #print(deaths_b / np.sum(model.population))
 
             if self.final_death_rate * np.sum(model.population) - deaths_c == 0:
                 beta0 = c
@@ -74,12 +80,12 @@ class TransmissionRateCalc:
             self.data.model_parameters_data.update({"beta": a})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
                                      cm=self.contact_mtx)
-            deaths_a = np.sum(model.get_deaths(solution=sol))
+            deaths_a = model.get_deaths(solution=sol)[-1]
 
             self.data.model_parameters_data.update({"beta": b})
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
                                      cm=self.contact_mtx)
-            deaths_b = np.sum(model.get_deaths(solution=sol))
+            deaths_b = model.get_deaths(solution=sol)[-1]
 
             if abs(self.final_death_rate * np.sum(model.population) - deaths_a) < \
                     abs(self.final_death_rate * np.sum(model.population) - deaths_b):
