@@ -6,11 +6,11 @@ from scipy.integrate import odeint
 
 class EpidemicModelBase(ABC):
     def __init__(self, model_data, compartments, country):
-        vals = model_data.age_data[country]["age"]
-        self.population = vals
+        ages = model_data.age_data[country]["age"]
+        self.population = ages
         self.compartments = compartments
         self.c_idx = {comp: idx for idx, comp in enumerate(self.compartments)}
-        self.n_age = len(vals)
+        self.n_age = len(ages)
 
     def initialize(self):
         iv = {key: np.zeros(self.n_age) for key in self.compartments}
