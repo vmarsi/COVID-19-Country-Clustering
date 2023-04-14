@@ -60,11 +60,6 @@ class TransmissionRateCalc:
             sol = model.get_solution(t=model.time_vector, parameters=self.data.model_parameters_data,
                                      cm=self.contact_mtx)
             deaths_c = model.get_deaths(solution=sol)[-1]
-            #r0generator = R0Generator(param=self.data.model_parameters_data)
-            #rho = r0generator.get_eig_val(contact_mtx=self.contact_mtx)
-            #r0 = b * rho
-            #print(r0)
-            #print(deaths_b / np.sum(model.population))
 
             if self.final_death_rate * np.sum(model.population) - deaths_c == 0:
                 beta0 = c
