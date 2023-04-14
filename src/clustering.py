@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from src.dataloader import DataLoader
 from src.dimension_reduction import DimRed
 from sklearn.metrics.pairwise import euclidean_distances, manhattan_distances
 
@@ -17,6 +18,8 @@ class Clustering:
         self.img_prefix = img_prefix
         self.threshold = threshold
         self.clusters = dict()
+        self.final_clusters = dict()
+        self.medoids = list()
         if dist == "euclidean":
             self.get_distance_matrix = self.get_euclidean_distance
         elif dist == "manhattan":
@@ -82,6 +85,8 @@ class Clustering:
         # cutting the dendrogram where the gap between two successive merges is at the largest.
         #  horizontal   line is drawn   through it.
         self.plot_dendrogram_with_threshold(res=res)
+
+        self.get_clusters()
 
     def calculate_ordered_distance_matrix(self, verbose: bool = True):
         dt, distance = self.get_distance_matrix()
@@ -151,3 +156,48 @@ class Clustering:
         plt.tight_layout()
         axes.tick_params(axis='both', which='major', labelsize=26)
         plt.savefig("../plots/" + self.img_prefix + "_" + "ordered_distance_3.pdf")
+
+    @staticmethod
+    def _index(country: str):
+        dl = DataLoader()
+        i = 0
+        for cy in dl.age_data.keys():
+            if cy != country:
+                i += 1
+            else:
+                break
+        return i
+
+    def get_clusters(self):
+        columns, dt, res = self.calculate_ordered_distance_matrix()
+
+        clus_and_feat = dict()
+        for i in self.clusters.keys():
+            temp = dict()
+            for country in self.clusters[i]:
+                ind = self._index(country=country)
+                features = self.dimred.apply_dpca()
+                temp.update({country: features[ind]})
+            clus_and_feat.update({i: temp})
+
+        clusters = dict()
+        for i in clus_and_feat.keys():
+            clusters.update({i: list(clus_and_feat[i].keys())})
+
+        medoids = list(0 for _ in range(len(clus_and_feat.keys())))
+        for i in clus_and_feat.keys():
+            sum = 0
+            for country in clus_and_feat[i].keys():
+                sum += clus_and_feat[i][country]
+            center = sum / len(clus_and_feat[i])
+            dists = np.zeros(len(clus_and_feat[i]))
+            keys = list(clus_and_feat[i].keys())
+            for k in range(len(clus_and_feat[i].keys())):
+                dists[k] = np.linalg.norm(center - clus_and_feat[i][keys[k]])
+            medoids[i - 1] = list(clus_and_feat[i].keys())[np.argmin(dists)]
+
+        self.final_clusters = clusters
+        self.medoids = medoids
+
+        print(self.final_clusters)
+        print(self.medoids)
