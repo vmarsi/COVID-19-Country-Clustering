@@ -39,9 +39,8 @@ class TransmissionRateCalc:
 
     def death_beta_0(self):
         model = RostModelHungary(model_data=self.data, country=self.country, time_max=self.time_max)
-        r0generator = R0Generator(param=self.data.model_parameters_data)
         a = 0.01
-        b = min(10 / r0generator.get_eig_val(contact_mtx=self.contact_mtx), 1)
+        b = 1
 
         beta0 = 5
         while b - a > 0.001:
