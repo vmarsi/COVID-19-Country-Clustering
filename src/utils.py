@@ -12,8 +12,8 @@ os.makedirs("../plots", exist_ok=True)
 
 def country_contacts(stan, country):
     for typ in ["contact_home", "contact_school", "contact_work", "contact_other", "contact_full"]:
-        img = plt.imshow(stan.data_all_dict[country][typ],
-                         cmap='jet', vmin=0, vmax=4, alpha=.9, interpolation="nearest")
+        mx = stan.data_all_dict[country][typ]
+        img = plt.imshow(mx.T, cmap='jet', vmin=0, vmax=4, alpha=.9, interpolation="nearest")
         ticks = np.arange(0, 16, 2)
         if typ == 'contact_full':
             cbar = plt.colorbar(img)
@@ -21,6 +21,8 @@ def country_contacts(stan, country):
             cbar.ax.tick_params(labelsize=tick_font_size)
         plt.xticks(ticks, fontsize=16)
         plt.yticks(ticks, fontsize=16)
+        ax = plt.gca()
+        ax.invert_yaxis()
         plt.savefig("../plots/" + country + "__" + typ.split("contact_")[1] + ".pdf")
         plt.clf()
 
@@ -37,6 +39,8 @@ def hungary_contacts(stan):
             cbar.ax.tick_params(labelsize=tick_font_size)
         plt.xticks(ticks, fontsize=24)
         plt.yticks(ticks, fontsize=24)
+        ax = plt.gca()
+        ax.invert_yaxis()
         plt.savefig("../plots/" + "hungary_" + typ.split("contact_")[1] + ".pdf")
 
 
@@ -55,6 +59,8 @@ def other_contacts(stan):
             cbar = plt.colorbar(img)
             tick_font_size = 25
             cbar.ax.tick_params(labelsize=tick_font_size)
+        ax = plt.gca()
+        ax.invert_yaxis()
         plt.savefig("../plots/" + country + ".pdf")
 
 
@@ -92,4 +98,4 @@ def main2():
 
 
 if __name__ == "__main__":
-    main2()
+    main()
