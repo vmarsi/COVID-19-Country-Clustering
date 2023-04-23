@@ -199,5 +199,5 @@ class Clustering:
         self.final_clusters = clusters
         self.medoids = medoids
 
-        print(self.final_clusters)
-        print(self.medoids)
+        print("Clusters: ", self.final_clusters)
+        print("Medoids of clusters: ", self.medoids)
