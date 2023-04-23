@@ -30,8 +30,8 @@ def country_contacts(stan, country):
 def hungary_contacts(stan):
     for typ in ["contact_home", "contact_school", "contact_work", "contact_other", "contact_full"]:
         # home contact
-        img = plt.imshow(stan.data_all_dict['Hungary'][typ],
-                         cmap='jet', vmin=0, vmax=4, alpha=.9, interpolation="nearest")
+        mx = stan.data_all_dict['Hungary'][typ]
+        img = plt.imshow(mx.T, cmap='jet', vmin=0, vmax=4, alpha=.9, interpolation="nearest")
         ticks = np.arange(0, 16, 2)
         if typ == 'contact_full':
             cbar = plt.colorbar(img)
@@ -49,7 +49,7 @@ def other_contacts(stan):
         # contact matrix Armenia
         matrix_to_plot = stan.data_all_dict[country]["contact_full"] * \
             stan.data_all_dict[country]["beta"]
-        img = plt.imshow(matrix_to_plot,
+        img = plt.imshow(matrix_to_plot.T,
                          cmap='jet', vmin=0, vmax=0.2,
                          alpha=.9, interpolation="nearest")
         ticks = np.arange(0, 16, 2)
