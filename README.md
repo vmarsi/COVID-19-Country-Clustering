@@ -21,7 +21,7 @@ where x can be 'home', 'school', 'work', 'other'
 
 ## Framework
 A summary about the steps of the procedure:
-![alt text](https://drive.google.com/uc?export=download&id=1HFZl8GrZVtoYlXhA36HfYTHUfRj6BlmJ)
+![alt text](https://drive.google.com/uc?export=download&id=1C5Z-liyT6BGv0UrpQwtJFtLacFgszg4M)
 
 ## Files
 Code for running the framework is available in folder `./src`. 
