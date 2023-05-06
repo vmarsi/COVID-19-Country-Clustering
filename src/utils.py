@@ -17,10 +17,10 @@ def country_contacts(stan, country):
         ticks = np.arange(0, 16, 2)
         if typ == 'contact_full':
             cbar = plt.colorbar(img)
-            tick_font_size = 30
+            tick_font_size = 40
             cbar.ax.tick_params(labelsize=tick_font_size)
-        plt.xticks(ticks, fontsize=16)
-        plt.yticks(ticks, fontsize=16)
+        plt.xticks(ticks, fontsize=25)
+        plt.yticks(ticks, fontsize=25)
         ax = plt.gca()
         ax.invert_yaxis()
         plt.savefig("../plots/" + country + "__" + typ.split("contact_")[1] + ".pdf")
@@ -35,10 +35,10 @@ def hungary_contacts(stan):
         ticks = np.arange(0, 16, 2)
         if typ == 'contact_full':
             cbar = plt.colorbar(img)
-            tick_font_size = 40
+            tick_font_size = 50
             cbar.ax.tick_params(labelsize=tick_font_size)
-        plt.xticks(ticks, fontsize=24)
-        plt.yticks(ticks, fontsize=24)
+        plt.xticks(ticks, fontsize=40)
+        plt.yticks(ticks, fontsize=40)
         ax = plt.gca()
         ax.invert_yaxis()
         plt.savefig("../plots/" + "hungary_" + typ.split("contact_")[1] + ".pdf")
