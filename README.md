@@ -1,8 +1,9 @@
 # Clustering European countries based on the associated contact patterns and socioeconomic indicators using epidemic 
 # models
 
-This repository was developed for thesis V. Marsi and Zs. Vizi "Clustering European countries based on the associated 
-contact patterns and socioeconomic indicators using epidemic models", 2023.
+This repository was developed for thesis by V. Marsi and Zs. Vizi "Clustering European countries based on the associated 
+contact patterns and socioeconomic indicators using epidemic models", 2023. 
+Link for the thesis: https://drive.google.com/file/d/1dL_iW7fvHj5ejQlYpziV2QbQYkNySEDB/view?usp=sharing
 
 ## Install
 This project is developed and tested with Python 3.10. To install project dependencies, execute the following steps:
