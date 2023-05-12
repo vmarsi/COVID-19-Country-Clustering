@@ -26,7 +26,6 @@ class DimRed:
             data_contact = pca.transform(cm_for_1dpca)
             data_ind = self.get_indicator_features()
             data_pca = np.concatenate((data_contact, data_ind), axis=1)
-            print(data_pca)
             #print("Explained variance ratios:",
             #      pca.explained_variance_ratio_,
             #      "->", sum(pca.explained_variance_ratio_))
