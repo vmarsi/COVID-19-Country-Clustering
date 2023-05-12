@@ -14,7 +14,14 @@ class Clustering:
 
         self.dimred = dimred
 
-        self.country_names = list(self.dimred.stand.dl.contact_data.keys())
+        #self.country_names = list(self.dimred.stand.dl.contact_data.keys())
+        self.country_names = ['Ausztria', 'Belgium', 'Bulgária', 'Horvátország', 'Ciprus', 'Csehország', 'Dánia',
+                              'Észtország', 'Finnország', 'Franciaország', 'Németország', 'Görögország', 'Magyarország',
+                              'Írország', 'Olaszország', 'Lettország', 'Litvánia', 'Luxemburg', 'Málta', 'Hollandia',
+                              'Lengyelország', 'Portugália', 'Románia', 'Szlovákia', 'Szlovénia', 'Spanyolország',
+                              'Svédország', 'Albánia', 'Örményország', 'Fehéroroszország', 'Bosznia-Hercegovina',
+                              'Izland', 'Észak-Macedónia', 'Szerbia', 'Svájc', 'Ukrajna', 'Egyesült Királyság',
+                              'Montenegró', 'Oroszország']
         self.img_prefix = img_prefix
         self.threshold = threshold
         self.clusters = dict()
@@ -60,7 +67,8 @@ class Clustering:
         plt.yticks(ticks=np.arange(len(self.country_names)),
                    labels=self.country_names,
                    rotation=0, fontsize=24)
-        plt.title("Measure of closeness  between countries before reordering",
+        #Measure of closeness between countries before reordering
+        plt.title("Az országok távolságának mértéke újrarendezés előtt",
                   fontsize=42, fontweight="bold")
         az = plt.imshow(distance, cmap='rainbow',
                         interpolation="nearest",
@@ -108,12 +116,12 @@ class Clustering:
         return columns, dt, res
 
     def plot_ordered_distance_matrix(self, columns, dt):
-        plt.figure(figsize=(45, 35), dpi=300)
+        plt.figure(figsize=(52, 45), dpi=300)
         az = plt.imshow(dt, cmap='rainbow',
                         alpha=.9, interpolation="nearest")
         plt.xticks(ticks=np.arange(len(columns)),
                    labels=columns,
-                   rotation=90, fontsize=32)
+                   rotation=90, fontsize=45)
         plt.yticks(ticks=np.arange(len(columns)),
                    labels=columns,
                    rotation=0, fontsize=45)
@@ -133,13 +141,15 @@ class Clustering:
                        show_leaf_counts=True,
                        distance_sort=True)
         axes.tick_params(axis='both', which='major', labelsize=26)
-        plt.title('Cluster Analysis without threshold', fontsize=50, fontweight="bold")
-        plt.ylabel('Distance between Clusters', fontsize=45)
+        #Cluster Analysis without threshold
+        plt.title('Klaszteranalízis küszöbszám nélkül', fontsize=50, fontweight="bold")
+        #Distance between Clusters
+        plt.ylabel('Klaszterek távolsága', fontsize=45)
         plt.tight_layout()
         plt.savefig("../plots/" + self.img_prefix + "_" + "ordered_distance_2.pdf")
 
     def plot_dendrogram_with_threshold(self, res):
-        fig, axes = plt.subplots(1, 1, figsize=(35, 24), dpi=300)
+        fig, axes = plt.subplots(1, 1, figsize=(38, 24), dpi=300)
         sch.dendrogram(res,
                        color_threshold=self.threshold,  # sets the color of the links above the color_threshold
                        leaf_rotation=90,
@@ -151,17 +161,24 @@ class Clustering:
                        orientation="top",
                        get_leaves=True,
                        distance_sort=True)
-        plt.title('Cluster Analysis with a threshold', fontsize=49, fontweight="bold")
-        plt.ylabel('Distance between Clusters', fontsize=30)
+        #Cluster Analysis with a threshold
+        #plt.title('Klaszteranalízis küszöbszámmal', fontsize=49, fontweight="bold")
+        #Distance between Clusters
+        plt.ylabel('.', fontsize=30)
         plt.tight_layout()
         axes.tick_params(axis='both', which='major', labelsize=26)
         plt.savefig("../plots/" + self.img_prefix + "_" + "ordered_distance_3.pdf")
 
     @staticmethod
-    def _index(country: str):
-        dl = DataLoader()
+    def _index(country: str, dl):
         i = 0
-        for cy in dl.age_data.keys():
+        #dl.age_data.keys()
+        for cy in ["Belgium", "Bulgária", "Csehország", "Dánia", "Németország", "Észtország", "Írország", "Görögország",
+                   "Spanyolország", "Franciaország", "Horvátország", "Olaszország", "Ciprus", "Lettország", "Litvánia",
+                   "Luxemburg", "Magyarország", "Málta", "Hollandia", "Ausztria", "Lengyelország", "Portugália",
+                   "Románia", "Szlovénia", "Szlovákia", "Finnország", "Svédország", "Albánia", "Örményország",
+                   "Fehéroroszország", "Bosznia-Hercegovina", "Izland", "Észak-Macedónia", "Szerbia", "Svájc",
+                   "Ukrajna", "Egyesült Királyság", "Montenegró", "Oroszország"]:
             if cy != country:
                 i += 1
             else:
@@ -172,11 +189,12 @@ class Clustering:
         columns, dt, res = self.calculate_ordered_distance_matrix()
 
         clus_and_feat = dict()
+        dl = DataLoader()
         for i in self.clusters.keys():
             temp = dict()
             for country in self.clusters[i]:
-                ind = self._index(country=country)
-                features = self.dimred.apply_dpca()
+                ind = self._index(country=country, dl=dl)
+                features = self.dimred.data_cm_pca
                 temp.update({country: features[ind]})
             clus_and_feat.update({i: temp})
 
@@ -201,3 +219,4 @@ class Clustering:
 
         print("Clusters: ", self.final_clusters)
         print("Medoids of clusters: ", self.medoids)
+        print(clus_and_feat)
